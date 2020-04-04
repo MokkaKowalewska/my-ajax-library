@@ -9,18 +9,19 @@ function AJAX(config) {
   console.log(this._config);
 }
 
-AJAX.prototype._extendOptions = function(config) {
-  const defeaultConfig = JSON.parse(JSON.stringify(this._defeaultConfig));
+AJAX.prototype._extendOptions = function (config) {
+  var defaultConfig = JSON.parse(JSON.stringify(this._defaultConfig));
 
-  for (let key in defeaultConfig) {
-
+  for (var key in defaultConfig) {
     if (key in config) {
-      defeaultConfig[key] = config[key];
+      defaultConfig[key] = config[key];
     }
   }
+
+  return defaultConfig;
 };
 
-var a = (AJAX.prototype._defeaultConfig = {
+AJAX.prototype._defaultConfig = {
   type: "GET",
   url: window.location.href,
   data: {},
@@ -31,7 +32,7 @@ var a = (AJAX.prototype._defeaultConfig = {
     password: null,
   },
   headers: {},
-});
+};
 
 AJAX({
   type: "POST",
