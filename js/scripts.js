@@ -6,10 +6,7 @@ function AJAX(config) {
   this._xhr = new XMLHttpRequest();
   this._config = this._extendOptions(config);
   this._assignEvents();
-  this._open();
-  this._assignUserHeaders();
-
-  this._send();
+  this._beforeSend();
 }
 
 AJAX.prototype._defaultConfig = {
@@ -52,46 +49,52 @@ AJAX.prototype._assignEvents = function () {
 };
 
 AJAX.prototype._assignUserHeaders = function () {
-  if((Object.keys(this._config.headers)).length) {
-
-    for(let key in this._config.headers) {
-        this._xhr.setRequestHeader(key, this._config.headers[key]);
+  if (Object.keys(this._config.headers).length) {
+    for (let key in this._config.headers) {
+      this._xhr.setRequestHeader(key, this._config.headers[key]);
     }
-
   }
 };
 
 AJAX.prototype._open = function () {
+  this._xhr.open(
+    this._config.type,
+    this._config.url,
+    this._config.options.async,
+    this._config.options.username,
+    this._config.options.password
+  );
 
-    this._xhr.open(
-        this._config.type,
-        this._config.url,
-        this._config.options.async,
-        this._config.options.username,
-        this._config.options.password,
-
-        );
-
-        this._xhr.timeout = this._config.options.timeout;
-
+  this._xhr.timeout = this._config.options.timeout;
 };
 
-AJAX.prototype._send = function () {
+AJAX.prototype._beforeSend = function (data) {
+  this._open();
+  this._assignUserHeaders();
+  this._send(data);
+};
 
-    this._xhr.send();
-}
+AJAX.prototype._send = function (data) {
+  this._xhr.send(data);
+};
 
 AJAX.prototype._handleResponse = function (e) {
-
-    if(this._xhr.readyState === 4 && this._xhr.status === 200) {
-
-        console.log("Otrzymano odpowiedź");
-
-    }
-
+  if (this._xhr.readyState === 4 && this._xhr.status === 200) {
+    console.log("Otrzymano odpowiedź");
+  }
 };
 
 AJAX.prototype._handleError = function (e) {};
+
+AJAX.prototype._serializeFormData = function (data) {
+  let serialized = new FormData();
+
+  for (let key in data) {
+    serialized.append(key, data[key]);
+  }
+
+  return serialized;
+};
 
 AJAX({
   type: "POST",
