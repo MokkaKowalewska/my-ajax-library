@@ -6,8 +6,9 @@ function AJAX(config) {
   this._xhr = new XMLHttpRequest();
   this._config = this._extendOptions(config);
   this._assignEvents();
-  this._assignUserHeaders();
   this._open();
+  this._assignUserHeaders();
+
   this._send();
 }
 
