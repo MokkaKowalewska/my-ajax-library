@@ -9,23 +9,10 @@ function AJAX(config) {
   this._beforeSend();
 }
 
-AJAX.prototype._defaultConfig = {
-  type: "GET",
-  url: window.location.href,
-  data: {},
-  options: {
-    async: true,
-    timeout: 0,
-    username: null,
-    password: null,
-  },
-  headers: {},
-};
-
 AJAX.prototype._extendOptions = function (config) {
-  var defaultConfig = JSON.parse(JSON.stringify(this._defaultConfig));
+  let defaultConfig = JSON.parse(JSON.stringify(this._defaultConfig));
 
-  for (var key in defaultConfig) {
+  for (let key in defaultConfig) {
     if (key in config) {
       continue;
     }
@@ -70,7 +57,7 @@ AJAX.prototype._open = function () {
   this._xhr.timeout = this._config.options.timeout;
 };
 
-AJAX.prototype._beforeSend = function (data) {
+AJAX.prototype._beforeSend = function () {
   let isData = Object.keys(this._config.headers).length > 0;
   data = null;
 
@@ -90,17 +77,28 @@ AJAX.prototype._send = function (data) {
 };
 
 AJAX.prototype._handleResponse = function (e) {
-  if (this._xhr.readyState === 4 && this._xhr.status === 200) {
+  if (
+    this._xhr.readyState === 4 &&
+    this._xhr.status >= 200 &&
+    this._xhr.status < 400
+  ) {
+    console.log("hejooo");
     if (typeof this._config.success === "function") {
       this._config.success(this._xhr.response, this._xhr);
     }
+  } else if (this._xhr.readyState === 4 && this._xhr.status >= 400) {
+    this._handleError();
   }
 };
 
-AJAX.prototype._handleError = function (e) {};
+AJAX.prototype._handleError = function (e) {
+  if (typeof this._config.failure === "function") {
+    this._config.failure(this._xhr);
+  }
+};
 
 AJAX.prototype._serializeData = function (data) {
-  let serialized = [];
+  let serialized = "";
 
   for (let key in data) {
     serialized += key + "=" + encodeURIComponent(data[key]) + "&";
@@ -118,9 +116,22 @@ AJAX.prototype._serializeFormData = function (data) {
   return serialized;
 };
 
+AJAX.prototype._defaultConfig = {
+  type: "GET",
+  url: window.location.href,
+  data: {},
+  options: {
+    async: true,
+    timeout: 0,
+    username: null,
+    password: null,
+  },
+  headers: {},
+};
+
 AJAX({
   type: "GET",
-  url: "odbierz.php",
+  url: "odbierza.php",
   data: {
     firstName: "Piotr",
     lastName: "Kowalski Nowak",
