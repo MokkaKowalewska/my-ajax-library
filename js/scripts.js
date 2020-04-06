@@ -27,11 +27,13 @@ AJAX.prototype._extendOptions = function (config) {
 
   for (var key in defaultConfig) {
     if (key in config) {
-      defaultConfig[key] = config[key];
+      continue;
     }
+
+    config[key] = defaultConfig[key];
   }
 
-  return defaultConfig;
+  return config;
 };
 
 AJAX.prototype._assignEvents = function () {
@@ -78,8 +80,6 @@ AJAX.prototype._beforeSend = function (data) {
     this._config.url += "?" + this._serializeData(this._config.data);
   }
 
-  console.log(this._config.url);
-
   this._open();
   this._assignUserHeaders();
   this._send(data);
@@ -91,7 +91,9 @@ AJAX.prototype._send = function (data) {
 
 AJAX.prototype._handleResponse = function (e) {
   if (this._xhr.readyState === 4 && this._xhr.status === 200) {
-    console.log("Otrzymano odpowiedź");
+    if (typeof this._config.success === "function") {
+      this._config.success(this._xhr.response, this._xhr);
+    }
   }
 };
 
