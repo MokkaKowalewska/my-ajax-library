@@ -69,6 +69,17 @@ AJAX.prototype._open = function () {
 };
 
 AJAX.prototype._beforeSend = function (data) {
+  let isData = Object.keys(this._config.headers).length > 0;
+  data = null;
+
+  if (this._config.type.toUpperCase() === "POST" && isData) {
+    data = this._serializeFormData(this._config.data);
+  } else if (this._config.type.toUpperCase() === "GET" && isData) {
+    this._config.url += "?" + this._serializeData(this._config.data);
+  }
+
+  console.log(this._config.url);
+
   this._open();
   this._assignUserHeaders();
   this._send(data);
@@ -86,6 +97,15 @@ AJAX.prototype._handleResponse = function (e) {
 
 AJAX.prototype._handleError = function (e) {};
 
+AJAX.prototype._serializeData = function (data) {
+  let serialized = [];
+
+  for (let key in data) {
+    serialized += key + "=" + encodeURIComponent(data[key]) + "&";
+  }
+  return serialized.slice(0, serialized.length - 1);
+};
+
 AJAX.prototype._serializeFormData = function (data) {
   let serialized = new FormData();
 
@@ -97,11 +117,11 @@ AJAX.prototype._serializeFormData = function (data) {
 };
 
 AJAX({
-  type: "POST",
+  type: "GET",
   url: "odbierz.php",
   data: {
     firstName: "Piotr",
-    lastName: "Kowalski",
+    lastName: "Kowalski Nowak",
   },
   headers: {
     "X-My-Header": "123#asdf",
