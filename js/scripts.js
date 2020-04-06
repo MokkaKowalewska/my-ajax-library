@@ -54,6 +54,7 @@ AJAX.prototype._open = function () {
     this._config.options.password
   );
 
+  this._xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
   this._xhr.timeout = this._config.options.timeout;
 };
 
@@ -131,7 +132,7 @@ AJAX.prototype._defaultConfig = {
 
 AJAX({
   type: "GET",
-  url: "odbierza.php",
+  url: "odbierz.php",
   data: {
     firstName: "Piotr",
     lastName: "Kowalski Nowak",
